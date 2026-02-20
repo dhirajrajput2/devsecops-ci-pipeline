@@ -1,0 +1,11 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: ./.github/workflows/java-build.yml
+    secrets: inherit
