@@ -6,52 +6,29 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: temurin
-          cache: maven
-
-      - name: Build Application
-        run: mvn clean install
-
-  sonar:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: temurin
-          cache: maven
-
-      - name: SonarCloud Analysis
-        run: |
-          mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=dhirajrajput2_devsecops-ci-pipeline \
-            -Dsonar.organization=dhirajrajput2 \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-  docker:
-    needs: sonar
+  ci:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Sonar Scan
+        run: mvn verify sonar:sonar \
+          -Dsonar.projectKey=YOUR_PROJECT_KEY \
+          -Dsonar.organization=YOUR_ORG \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       - name: Build Docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/devsecops-ci:${{ github.sha }} .
