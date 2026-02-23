@@ -39,8 +39,9 @@ jobs:
           cache: maven
 
       - name: SonarCloud Analysis
-        run: mvn clean verify sonar:sonar \
-          -Dsonar.projectKey=dhirajrajput2_devsecops-ci-pipeline \
-          -Dsonar.organization=dhirajrajput2 \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=dhirajrajput2_devsecops-ci-pipeline \
+            -Dsonar.organization=dhirajrajput2 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
