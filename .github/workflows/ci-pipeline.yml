@@ -1,4 +1,4 @@
-name: DevSecOps CI
+name: DevSecOps CI Pipeline
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  ci:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,11 +17,31 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
           cache: maven
 
       - name: Build Application
         run: mvn clean install
 
-      - name: Sonar Scan
-        run: mvn sonar:sonar -Dsonar.projectKey=dhirajrajput2_devsecops-ci-pipeline -Dsonar.organization=dhirajrajput2 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+  sonar:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+
+      - name: SonarCloud Analysis
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=dhirajrajput2_devsecops-ci-pipeline \
+            -Dsonar.organization=dhirajrajput2 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
